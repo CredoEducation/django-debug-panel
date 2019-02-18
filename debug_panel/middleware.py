@@ -62,8 +62,9 @@ class DebugPanelMiddleware(debug_toolbar.middleware.DebugToolbarMiddleware):
         toolbar = self.__class__.debug_toolbars.get(threading.current_thread().ident, None)
 
         response = super(DebugPanelMiddleware, self).process_response(request, response)
+        json_request_content_types = ['application/json']
 
-        if toolbar:
+        if toolbar and (request.is_ajax() or request.content_type in json_request_content_types):
             # for django-debug-toolbar >= 1.4
             for panel in reversed(toolbar.enabled_panels):
                 if hasattr(panel, 'generate_stats'):
